@@ -3,7 +3,7 @@
 "algorithm_class": "dlopt.architecture.contrib.SelfAdjMuPLambdaUniform",
 "data_loader_class": "publications.cities2018.rubbish.RubbishDataLoader",
 "data_loader_params": {
-    "filename": "../../data/waste/rubbish-2013.csv",
+    "filename": "data/waste/rubbish-2013.csv",
     "batch_size" : 5,
     "training_ratio": 0.8,
     "validation_ratio": 0.2,
