@@ -436,11 +436,14 @@ class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
         metrics['evaluation_time'] = evaluation_time
         del trainer
         gc_out = gc.collect()
+
         if self.verbose > 1:
             print("GC collect", gc_out)
             print(gc.garbage)
-        if self.verbose:
-            print(metrics)
+
+
+        print(metrics)
+
         return model, metrics, pred
 
     @staticmethod
