@@ -187,6 +187,10 @@ class SelfAdjMuPLambdaUniform(ea.EABase):
               self.params['mutation_max_step'])
 
 
+class StaticSelfAdjMuPLambdaUniform(SelfAdjMuPLambdaUniform):
+    def call_on_generation(self, population):
+        print('keeping mutation params the same')
+
 class TimeSeriesTrainProblem(op.Problem):
     """ Optimize an RNN architecture based on the results
     of pre-trained networks
