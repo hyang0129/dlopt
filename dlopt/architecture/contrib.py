@@ -10,7 +10,8 @@ import numpy as np
 import time
 import gc
 from keras import backend as K
-
+from dlopt.optimization import Solution
+from pathlib import Path
 
 class TimeSeriesHybridMRSProblem(pr.TimeSeriesMAERandSampProblem):
     """ Mean Absolute Error Random Sampling RNN Problem
@@ -345,3 +346,31 @@ class TimeSeriesTrainProblem(op.Problem):
         if self.verbose:
             print(metrics)
         return model, metrics, pred
+
+class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
+
+    def evaluate(self,
+                 solution : Solution):
+        if solution.is_evaluated():
+            if self.verbose > 1:
+                print('Solution already evaluated')
+            return
+        model, layers, look_back = self.decode_solution(solution)
+        model, results, _ = self._train(model,
+                                        look_back,
+                                        self.dropout,
+                                        self.train_epochs)
+
+        dir = '/tmp'
+        Path(dir).mkdir(parents=True, exists_ok = True)
+        solution.save(dir, model)
+
+        del model
+        gc.collect()
+        if self.verbose > 1:
+            print({'layers': layers,
+                   'look_back': look_back,
+                   'results': results})
+        for target in self.targets:
+            solution.set_fitness(target,
+                                 results[target])

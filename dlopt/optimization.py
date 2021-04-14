@@ -5,7 +5,9 @@ from . import util as ut
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from keras.utils import Sequence
-
+from compress_pickle import load, dump
+import os
+import keras
 
 class ModelOptimization(ABC):
     """ Base class for archtiecture/weights optimization
@@ -257,3 +259,10 @@ class Solution(object):
             return True
         else:
             return False
+
+
+    def save(self, path : str, model: keras.models.Model ):
+        dump(self, os.path.join(path, f"solution_{self.id:03d}.pkl"))
+        model.save(os.path.join(path, f"model_{self.id:03d}.pkl"), include_optimizer=False)
+
+

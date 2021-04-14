@@ -129,22 +129,55 @@ class EABase(op.ModelOptimization):
 
     def _go_one_step(self,
                      seed_population):
+        """
+        Runs the whole evolutionary process.
+
+        Migration population size idk why its there, just set it to 0 because we generally don't want to migrate
+        the any population from a previous run.
+
+        Args:
+            seed_population:
+
+        Returns:
+
+        """
+
+        id_counter = 0
+
+        # initialize
         population = (
             seed_population[:self.params['migration_population_size']] +
             [self.problem.next_solution()
              for _ in range(self.params['population_size'] -
                             self.params['migration_population_size'])])
         [self.problem.evaluate(solution) for solution in population]
+
+
+        for solution in population:
+            solution.id = id_counter
+            id_counter += 1
+
         evaluations = len(population)
         generation = 0
+
+
         if self.verbose:
             print("Generation " + str(generation))
             for p in population:
                 print("fitness:", p.fitness,
                       "encoded:", p.encoded)
+
+
+        # code to run a generation
         while evaluations < self.params['max_eval']:
             offspring = [self.select(population)
                          for _ in range(self.params['offspring_size'])]
+
+            for offspring in offspring:
+                offspring.parent_id = offspring.id
+                offspring.id = id_counter
+                id_counter += 1
+
             [self.mutate(x) for x in offspring]
             [x.clear_fitness() for x in offspring]
             [self.problem.validate_solution(x) for x in offspring]
