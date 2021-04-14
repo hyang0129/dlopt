@@ -161,11 +161,11 @@ class EABase(op.ModelOptimization):
         generation = 0
 
 
-        if self.verbose:
-            print("Generation " + str(generation))
-            for p in population:
-                print("fitness:", p.fitness,
-                      "encoded:", p.encoded)
+
+        print("Generation " + str(generation))
+        for p in population:
+            print("fitness:", p.fitness,
+                  "encoded:", p.encoded)
 
 
         # code to run a generation
@@ -193,12 +193,14 @@ class EABase(op.ModelOptimization):
             evaluations += len(offspring)
             generation += 1
             self.call_on_generation(population)
-            if self.verbose:
-                print(str(evaluations) + " evaluations")
-                print("Generation " + str(generation))
-                for p in population:
-                    print("fitness:", p.fitness,
-                          "solution:", p.encoded)
+
+
+            print(str(evaluations) + " evaluations")
+            print("Generation " + str(generation))
+            for p in population:
+                print("fitness:", p.fitness,
+                      "solution:", p.encoded)
+
         return population
 
     def optimize(self,
