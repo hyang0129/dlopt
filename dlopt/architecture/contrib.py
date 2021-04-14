@@ -466,12 +466,14 @@ class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
                     inherited_weights += num_wts_in_layer
                 else:
                     # print('initialized via mean and std of parent')
-                    # wts[i] = np.random.normal(loc=mean, scale=std, size=wts[i].shape)
+                    # wts[i] = np.random.uniform(loc=mean, scale=std, size=wts[i].shape)
+                    wts[i] = np.random.uniform(low=-0.5, high=0.5, size=wts[i].shape)
                     pass
 
             else:
                 # print('more layers in child than parent initialized via mean and std of parent')
                 # wts[i] = np.random.normal(loc=mean, scale=std, size=wts[i].shape)
+                wts[i] = np.random.uniform(low=-0.5, high=0.5, size=wts[i].shape)
                 pass
 
         print(f"inherited {inherited_weights * 100/ total_weights:.1f}% of {total_weights} weights" )
