@@ -8,6 +8,7 @@ from keras.utils import Sequence
 from compress_pickle import load, dump
 import os
 import keras
+import time
 
 class ModelOptimization(ABC):
     """ Base class for archtiecture/weights optimization
@@ -106,6 +107,7 @@ class Problem(ABC):
         self.dataset = dataset
         self.kwargs = kwargs
         self.verbose = verbose
+        self.start = time.time()
 
     @abstractmethod
     def evaluate(self,

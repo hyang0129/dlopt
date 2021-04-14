@@ -15,6 +15,7 @@ from pathlib import Path
 import os
 import keras
 import numpy as np
+import json
 
 class TimeSeriesHybridMRSProblem(pr.TimeSeriesMAERandSampProblem):
     """ Mean Absolute Error Random Sampling RNN Problem
@@ -441,8 +442,14 @@ class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
             print("GC collect", gc_out)
             print(gc.garbage)
 
+        if epochs > 10:
+            with open('lamarckian_results.txt', 'a') as f:
+                metrics['total_time_seconds'] = time.time() - self.start
+                metrics['total_time_minutes'] = metrics['total_time_seconds'] / 60
+                f.write(json.JSONEncoder().encode(metrics))
+                f.write('\n')
 
-        print(metrics)
+            print(metrics)
 
         return model, metrics, pred
 
