@@ -173,9 +173,9 @@ class EABase(op.ModelOptimization):
             offspring = [self.select(population)
                          for _ in range(self.params['offspring_size'])]
 
-            for offspring in offspring:
-                offspring.parent_id = offspring.id
-                offspring.id = id_counter
+            for child in offspring:
+                child.parent_id = child.id
+                child.id = id_counter
                 id_counter += 1
 
             [self.mutate(x) for x in offspring]
