@@ -263,6 +263,6 @@ class Solution(object):
 
     def save(self, path : str, model: keras.models.Model ):
         dump(self, os.path.join(path, f"solution_{self.id:03d}.pkl"))
-        model.save(os.path.join(path, f"model_{self.id:03d}.pkl"), include_optimizer=False)
+        model.save(os.path.join(path, f"model_{self.id:03d}.h5"), include_optimizer=False)
 
 

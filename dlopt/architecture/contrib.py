@@ -361,7 +361,7 @@ class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
                                         self.dropout,
                                         self.train_epochs)
 
-        dir = '/tmp'
+        dir = 'tmp'
         Path(dir).mkdir(parents=True, exist_ok = True)
         solution.save(dir, model)
 
