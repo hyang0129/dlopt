@@ -64,3 +64,4 @@ tensorflow-tensorboard==0.1.8
 termcolor==1.1.0
 Werkzeug==0.15.3
 wrapt==1.11.2
+compress_pickle
