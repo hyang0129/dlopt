@@ -152,11 +152,11 @@ class SelfAdjMuPLambdaUniform(ea.EABase):
         for target in population[0].targets:
             avgs[target] = np.mean([sol.get_fitness(target)
                                     for sol in population])
-        if self.verbose > 1:
-            print("Mutation parameters before tuning",
-                  self.params['p_mutation_i'],
-                  self.params['p_mutation_e'],
-                  self.params['mutation_max_step'])
+
+        print("Mutation parameters before tuning",
+              self.params['p_mutation_i'],
+              self.params['p_mutation_e'],
+              self.params['mutation_max_step'])
         if len(self.last_avgs) > 0:
             diffs = []
             for target in population[0].targets:
@@ -178,13 +178,13 @@ class SelfAdjMuPLambdaUniform(ea.EABase):
             # 
         self.last_avgs = avgs
         # gc_out = gc.collect()
-        if self.verbose > 1:
-            # print("GC collect", gc_out)
-            print("Averages:", str(avgs))
-            print("Mutation parameters after tuning",
-                  self.params['p_mutation_i'],
-                  self.params['p_mutation_e'],
-                  self.params['mutation_max_step'])
+
+        # print("GC collect", gc_out)
+        print("Averages:", str(avgs))
+        print("Mutation parameters after tuning",
+              self.params['p_mutation_i'],
+              self.params['p_mutation_e'],
+              self.params['mutation_max_step'])
 
 
 class TimeSeriesTrainProblem(op.Problem):

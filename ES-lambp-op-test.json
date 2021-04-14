@@ -56,7 +56,7 @@
 "targets": {"mae": -1},
 "population_size": 5,
 "offspring_size": 5,
-"max_eval": 20,
+"max_eval": 100,
 "max_restart": 0,
 "migration_population_size": 0,
 "p_mutation_i": 0.2,
