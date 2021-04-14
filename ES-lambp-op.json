@@ -1,6 +1,6 @@
 {
 "action_class": "dlopt.tools.optimization.Optimizer",
-"algorithm_class": "dlopt.architecture.contrib.StaticSelfAdjMuPLambdaUniform",
+"algorithm_class": "dlopt.architecture.contrib.SelfAdjMuPLambdaUniform",
 
 "data_loader_class": "publications.cities2018.rubbish.RubbishDataLoader",
 "data_loader_params": {
