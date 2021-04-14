@@ -174,7 +174,7 @@ class EABase(op.ModelOptimization):
                          for _ in range(self.params['offspring_size'])]
 
             for child in offspring:
-                child.parent_id = child.id
+                child.parent_id = int(child.id)
                 child.id = id_counter
                 id_counter += 1
 
