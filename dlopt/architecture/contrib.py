@@ -12,6 +12,9 @@ import gc
 from keras import backend as K
 from dlopt.optimization import Solution
 from pathlib import Path
+import os
+import keras
+import numpy as np
 
 class TimeSeriesHybridMRSProblem(pr.TimeSeriesMAERandSampProblem):
     """ Mean Absolute Error Random Sampling RNN Problem
@@ -356,12 +359,24 @@ class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
                 print('Solution already evaluated')
             return
         model, layers, look_back = self.decode_solution(solution)
+
+        dir = 'tmp'
+
+        init_model = True
+        if hasattr(solution, 'parent_id'):
+            print('inheriting weights from solution %i to solution %i' % (solution.parent_id, solution.id))
+            parent_model = self.get_parent_model(dir, solution.parent_id)
+            model = self.inherit_weights(model, parent_model)
+            init_model = False
+
+
         model, results, _ = self._train(model,
                                         look_back,
                                         self.dropout,
-                                        self.train_epochs)
+                                        self.train_epochs,
+                                        init_model)
 
-        dir = 'tmp'
+
         Path(dir).mkdir(parents=True, exist_ok = True)
         solution.save(dir, model)
 
@@ -374,3 +389,90 @@ class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
         for target in self.targets:
             solution.set_fitness(target,
                                  results[target])
+
+    def _train(self,
+               model,
+               look_back,
+               dropout,
+               epochs,
+               init_model=True):
+        K.clear_session()
+        if self.verbose > 1:
+            print('Session cleared')
+        model = model.__class__.from_config(model.get_config())
+        start = time.time()
+        trainer = self.nn_trainer_class(verbose=self.verbose,
+                                        **self.kwargs)
+        model = self.builder_class.add_dropout(model,
+                                               dropout)
+
+        if init_model:
+            print("initialization model using random uniform")
+            self.builder_class.init_weights(model,
+                                            ut.random_uniform,
+                                            low=-0.5,
+                                            high=0.5)
+
+        trainer.load_from_model(model)
+        self.dataset.training_data.look_back = look_back
+        self.dataset.validation_data.look_back = look_back
+        self.dataset.testing_data.look_back = look_back
+        trainer.train(self.dataset.training_data,
+                      validation_dataset=self.dataset.validation_data,
+                      epochs=epochs,
+                      **self.kwargs)
+        metrics, pred = trainer.evaluate(self.dataset.testing_data,
+                                         **self.kwargs)
+        evaluation_time = time.time() - start
+        metrics['evaluation_time'] = evaluation_time
+        del trainer
+        gc_out = gc.collect()
+        if self.verbose > 1:
+            print("GC collect", gc_out)
+            print(gc.garbage)
+        if self.verbose:
+            print(metrics)
+        return model, metrics, pred
+
+    @staticmethod
+    def get_parent_model(path, id):
+        return keras.models.load_model(os.path.join(path, f'model_{id:03d}.h5'))
+
+    @staticmethod
+    def inherit_weights(model, parent_model):
+
+        child = model
+        parent = parent_model
+
+        wts = child.get_weights()
+        p_wts = parent.get_weights()
+
+        flat_wts = np.concatenate([wt.reshape(-1) for wt in p_wts])
+
+        mean = np.mean(flat_wts)
+        std = np.std(flat_wts)
+
+        inherited_weights = 0
+        total_weights = 0
+        for i, w in enumerate(wts):
+
+            if i < len(p_wts):
+                num_wts_in_layer = np.product(w.shape)
+                total_weights += num_wts_in_layer
+                # print(w.shape, p_wts[i].shape)
+                if w.shape == p_wts[i].shape:
+                    # print('inherited')
+                    wts[i] = p_wts[i]
+                    inherited_weights += num_wts_in_layer
+                else:
+                    # print('initialized via mean and std of parent')
+                    wts[i] = np.random.normal(loc=mean, scale=std, size=wts[i].shape)
+
+            else:
+                # print('more layers in child than parent initialized via mean and std of parent')
+                wts[i] = np.random.normal(loc=mean, scale=std, size=wts[i].shape)
+
+        print(f"inherited {inherited_weights * 100/ total_weights:.1f}% of {total_weights} weights" )
+        child.set_weights(wts)
+
+        return child
