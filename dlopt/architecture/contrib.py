@@ -354,6 +354,9 @@ class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
 
     def evaluate(self,
                  solution : Solution):
+
+        K.clear_session()
+
         if solution.is_evaluated():
             if self.verbose > 1:
                 print('Solution already evaluated')
@@ -396,10 +399,12 @@ class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
                dropout,
                epochs,
                init_model=True):
-        K.clear_session()
+
         if self.verbose > 1:
             print('Session cleared')
-        model = model.__class__.from_config(model.get_config())
+
+        # model = model.__class__.from_config(model.get_config())
+
         start = time.time()
         trainer = self.nn_trainer_class(verbose=self.verbose,
                                         **self.kwargs)
@@ -465,18 +470,18 @@ class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
                     wts[i] = p_wts[i]
                     inherited_weights += num_wts_in_layer
                 else:
-                    # print('initialized via mean and std of parent')
+                    print('initialized via mean and std of parent')
                     # wts[i] = np.random.uniform(loc=mean, scale=std, size=wts[i].shape)
                     wts[i] = np.random.uniform(low=-0.5, high=0.5, size=wts[i].shape)
                     pass
 
             else:
-                # print('more layers in child than parent initialized via mean and std of parent')
+                print('more layers in child than parent initialized via mean and std of parent')
                 # wts[i] = np.random.normal(loc=mean, scale=std, size=wts[i].shape)
                 wts[i] = np.random.uniform(low=-0.5, high=0.5, size=wts[i].shape)
                 pass
 
         print(f"inherited {inherited_weights * 100/ total_weights:.1f}% of {total_weights} weights" )
-        child.set_weights(wts)
+        model.set_weights(wts)
 
-        return child
+        return model
