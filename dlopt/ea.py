@@ -183,11 +183,13 @@ class EABase(op.ModelOptimization):
             [x.clear_fitness() for x in offspring]
             [self.problem.validate_solution(x) for x in offspring]
             [self.problem.evaluate(x) for x in offspring]
-            if self.verbose:
-                print("Offspring " + str(generation))
-                for o in offspring:
-                    print("fitness:", o.fitness,
-                          "solution:", o.encoded)
+
+            print("Offspring " + str(generation))
+            for o in offspring:
+                print("fitness:", o.fitness,
+                      "solution:", o.encoded,
+                      'id', o.id)
+
             population = self.replace(population,
                                       offspring)
             evaluations += len(offspring)
@@ -199,7 +201,8 @@ class EABase(op.ModelOptimization):
             print("Generation " + str(generation))
             for p in population:
                 print("fitness:", p.fitness,
-                      "solution:", p.encoded)
+                      "solution:", p.encoded,
+                      "id" , p.id)
 
         return population
 
