@@ -150,12 +150,12 @@ class EABase(op.ModelOptimization):
             [self.problem.next_solution()
              for _ in range(self.params['population_size'] -
                             self.params['migration_population_size'])])
-        [self.problem.evaluate(solution) for solution in population]
-
 
         for solution in population:
             solution.id = id_counter
             id_counter += 1
+
+        [self.problem.evaluate(solution) for solution in population]
 
         evaluations = len(population)
         generation = 0
@@ -177,6 +177,7 @@ class EABase(op.ModelOptimization):
                 child.parent_id = child.id
                 child.id = id_counter
                 id_counter += 1
+
 
             [self.mutate(x) for x in offspring]
             [x.clear_fitness() for x in offspring]
