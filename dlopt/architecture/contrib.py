@@ -353,6 +353,14 @@ class TimeSeriesTrainProblem(op.Problem):
             print(gc.garbage)
         if self.verbose:
             print(metrics)
+
+        if epochs > 10:
+            with open('/content/drive/Shareddrives/KAGGLE/MRS/backprop_results.txt', 'a') as f:
+                metrics['total_time_seconds'] = time.time() - self.start
+                metrics['total_time_minutes'] = metrics['total_time_seconds'] / 60
+                f.write(json.JSONEncoder().encode(metrics))
+                f.write('\n')
+
         return model, metrics, pred
 
 class LamarckianTimeSeriesTrainProblem(TimeSeriesTrainProblem):
